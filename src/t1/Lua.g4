@@ -20,7 +20,7 @@
 grammar Lua;
 
 @members {
-   public static String grupo="<<551732, >>";
+   public static String grupo="<<551732, 551961>>";
 }
 
 
@@ -30,7 +30,9 @@ Whitespace : (' '|'\t'| '\r'| '\n') {skip();};
 Comentario : '--'~('\n'|'\r')* '\r'? '\n'{skip();};   
 
 //numero cadeia e nomes
-Numero : ('0'..'9')+ ('.'('0'..'9')+)?;
+Numero : ('0'..'9')* ('.')? ('0'..'9')+ (('e' | 'E') ('+' | '-')? ('0'..'9')+)?;
+// Verificar /\
+//NumeroHex : '0x' ('0'..'9' | ('a'..'f' | 'A'..'F'))*; // Precisa?
 
 //Cadeia : '"'(~('\\'|'"') )* '"'| '\''~( '\''| '\\')* '\'';
 Cadeia : '"'(~('\\'|'"') )* '"';
@@ -39,7 +41,7 @@ Nome : ('a'..'z'| 'A'..'Z') ('a'..'z'| 'A'..'Z'| '0'..'1')*;
 
 programa : trecho;
 
-trecho : (comando (';' )?)* (ultimocomando (';')?)?;
+trecho : (comando (';')?)* (ultimocomando (';')?)?;
 
 bloco : trecho;
 
@@ -47,7 +49,7 @@ ultimocomando : 'return' (listaexp)? | 'break';
 
 listaexp : (exp ',')* exp;
 
-prog: Numero | Cadeia;
+prog: Numero | Cadeia; //??
 
 //Palavras reservadas
 comando : listavar '=' listaexp |
@@ -56,15 +58,15 @@ comando : listavar '=' listaexp |
             'while' exp 'do' bloco 'end' |
             'repeat' bloco 'until' exp |
             'if' exp 'then' bloco ('elseif' exp 'then' bloco)* ('else' bloco)? 'end' |
-            'for' Nome '='exp ',' exp (',' exp)? 'do' bloco 'end' |
+            'for' Nome { TabelaDeSimbolos.adicionarSimbolo($Nome.text,Tipo.VARIAVEL); } '=' exp ',' exp (',' exp)? 'do' bloco 'end' |
             'for' listadenomes 'in' listaexp 'do' bloco 'end' |
-            'function' nomedafuncao corpodafuncao |
-            'local' 'function' Nome corpodafuncao |
+            'function' nomedafuncao { TabelaDeSimbolos.adicionarSimbolo($nomedafuncao.text,Tipo.FUNCAO); } corpodafuncao |
+            'local' 'function' Nome /*{ TabelaDeSimbolos.adicionarSimbolo($Nome.text,Tipo.FUNCAO); }*/ corpodafuncao |
             'local' listadenomes ('=' listaexp)?;
 
-listavar : var (',' var)*;
+listavar : var { TabelaDeSimbolos.adicionarSimbolo($var.text,Tipo.VARIAVEL); } (',' var { TabelaDeSimbolos.adicionarSimbolo($var.text,Tipo.VARIAVEL); } )*;
 
-expprefixo : var | chamadadefuncao | '('  exp ')';
+expprefixo : var { TabelaDeSimbolos.adicionarSimbolo($var.text,Tipo.VARIAVEL); } | chamadadefuncao | '('  exp ')';
 /*exp : 'nil' | 'false' | 'true' | Numero | Cadeia | '...'| funcao |
         expprefixo | construtortabela | exp opbin exp | opunaria exp;*/
 
@@ -87,24 +89,36 @@ listadecampos : campo (separadordecampos campo)* (separadordecampos)?;
 construtortabela : '{' (listadecampos)? '}';
 args : '(' (listaexp)?')' | construtortabela | Cadeia;
 //chamadadefuncao : expprefixo args | expprefixo ':' Nome args;
-chamadadefuncao : Nome args | Nome ':' Nome args;
+////chamadadefuncao : Nome args | Nome ':' Nome args;
+
+expprefixo2:  Nome ('[' exp ']' | '.' Nome)*;
+chamadadefuncao : expprefixo2 { TabelaDeSimbolos.adicionarSimbolo($expprefixo2.text,Tipo.FUNCAO); } (':' Nome)? args;
 
 nomedafuncao : Nome ('.' Nome)* (':'  Nome)?;        
 
-var : Nome ('.' Nome)*;
+//// var : Nome ('.' Nome)*;
 
-//var : Nome | expprefixo '[' exp ']' | expprefixo '.' Nome;
+// Estava comentado e o de cima descomentado, testando com o abaixo (mais completo)
+var : Nome | expprefixo2 '[' exp ']' | expprefixo2 '.' Nome;
 
 funcao : 'function' corpodafuncao;
 
 corpodafuncao : '(' (listapar)? ')'  bloco 'end';
 listapar : listadenomes (',' '...')? | '...';
-            
+
 opbin : '+'| '-'| '*' | '/'| '^'| '%'| '..' |
         '<'| '<='| '>'| '>='| '==' | '~=' | 'and' | 'or' ;
 
-
 opunaria : '-'| 'not' | '#';
+//oparitmeticobinario : '+' | '-' | '*' | '/' | '^' | '%';
+//
+//oplogicounario : 'not';
+//oplogicobinario : 'and' | 'or';
+//oplogico : oplogicobinario | oplogicounario;
+//
+//opconcatenacao : '..';
+//oprelacional : '<'| '<='| '>'| '>='| '==' | '~=';
+//opcomprimento : '#';
             
-listadenomes : Nome (','Nome)*;
+listadenomes : Nome { TabelaDeSimbolos.adicionarSimbolo($Nome.text,Tipo.VARIAVEL); } (','Nome { TabelaDeSimbolos.adicionarSimbolo($Nome.text,Tipo.VARIAVEL); } )*;
 

@@ -1,4 +1,4 @@
-// Generated from Lua.g4 by ANTLR 4.5.3
+// Generated from C:/Users/Yago/Documents/GitHub/t1-cc1/src/t1\Lua.g4 by ANTLR 4.5.1
 package t1;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -203,6 +203,18 @@ public class LuaBaseListener implements LuaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArgs(LuaParser.ArgsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpprefixo2(LuaParser.Expprefixo2Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpprefixo2(LuaParser.Expprefixo2Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

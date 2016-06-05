@@ -1,4 +1,4 @@
-// Generated from Lua.g4 by ANTLR 4.5.3
+// Generated from C:/Users/Yago/Documents/GitHub/t1-cc1/src/t1\Lua.g4 by ANTLR 4.5.1
 package t1;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -167,6 +167,16 @@ public interface LuaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArgs(LuaParser.ArgsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LuaParser#expprefixo2}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpprefixo2(LuaParser.Expprefixo2Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link LuaParser#expprefixo2}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpprefixo2(LuaParser.Expprefixo2Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link LuaParser#chamadadefuncao}.
 	 * @param ctx the parse tree
